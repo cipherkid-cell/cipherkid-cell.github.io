@@ -1,231 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Solech — Solar ROI Calculator</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<style>
-  :root{
-    --primary:#2d9cdb; --secondary:#0ea5a4; --bg:#f6fbff; --text:#0f172a; --muted:#64748b;
-    --card:#ffffff; --shadow:0 10px 28px rgba(2,8,23,.10); --r:18px;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,Segoe UI,Roboto,Arial,sans-serif}
-  a{color:inherit;text-decoration:none}
-  header{position:sticky;top:0;z-index:10;background:linear-gradient(90deg,var(--primary),#1d7fb8);color:#fff;box-shadow:var(--shadow)}
-  .nav{max-width:1100px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
-  .brand{display:flex;gap:10px;align-items:center}
-  .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--secondary),#4bd7c7)}
-  .menu{display:flex;gap:18px;align-items:center}
-  .cta{background:#fff;color:#0b4e74;padding:8px 14px;border-radius:10px;font-weight:700}
-  .hero{max-width:1100px;margin:0 auto;padding:56px 18px 24px;display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:center}
-  .hero h1{margin:0 0 10px;font-size:clamp(2rem,4vw,3rem);line-height:1.1}
-  .hero p{margin:0 0 14px;color:var(--muted)}
-  .btn{display:inline-flex;align-items:center;gap:10px;background:var(--primary);color:#fff;padding:12px 16px;border-radius:12px;font-weight:700}
-  .btn.alt{background:var(--secondary)}
-  .card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
-  .section{max-width:1100px;margin:0 auto;padding:26px 18px 40px}
-  .lead{color:var(--muted);margin:6px 0 18px}
-  .calculator{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-  label{font-size:.9rem;font-weight:600}
-  input{width:100%;margin-top:6px;padding:10px 12px;border:1px solid #e2e8f0;border-radius:12px;background:#fbfdff}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .stats{display:grid;gap:8px;margin-top:10px}
-  .stat{display:flex;justify-content:space-between;gap:12px;background:#f2f8ff;border:1px solid #dceafe;border-radius:12px;padding:10px 12px}
-  canvas{max-width:100%}
-  footer{background:#0b1220;color:#cbd5e1;margin-top:40px}
-  .foot{max-width:1100px;margin:0 auto;padding:18px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
-  @media (max-width:980px){.hero{grid-template-columns:1fr}.calculator{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
-  @media (max-width:560px){.menu{display:none}}
-</style>
-</head>
-<body>
-<header>
-  <div class="nav">
-    <div class="brand"><div class="logo" aria-hidden="true"></div><strong>Solech</strong></div>
-    <nav class="menu">
-      <a href="#calculator">ROI Calculator</a>
-      <a href="#contact">Contact</a>
-      <a class="cta" href="#contact">Get a Quote</a>
-    </nav>
-  </div>
-</header>
-
-<section class="hero">
-  <div>
-    <h1>Affordable Solar Solutions, <span style="color:#bfe7ff">Powered by AI</span></h1>
-    <p>Estimate your payback time and see cumulative savings with a single click.</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
-      <a class="btn" href="#calculator">Try the Calculator</a>
-      <a class="btn alt" href="#contact">Talk to Us</a>
-    </div>
-  </div>
-  <div class="card" role="img" aria-label="Illustration">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center">
-      <div style="background:linear-gradient(135deg,#0ea5a4,#5fe0cb);height:120px;border-radius:14px"></div>
-      <div style="background:linear-gradient(135deg,#2d9cdb,#9ed6f3);height:160px;border-radius:14px"></div>
-      <div style="background:linear-gradient(135deg,#fcd34d,#f59e0b);height:80px;border-radius:14px"></div>
-      <div style="background:linear-gradient(135deg,#a78bfa,#60a5fa);height:110px;border-radius:14px"></div>
-    </div>
-  </div>
-</section>
-
-<section id="calculator" class="section">
-  <h2>Solar ROI Calculator</h2>
-  <p class="lead">Enter your numbers to estimate payback and visualize savings vs. your net installation cost.</p>
-
-  <div class="calculator">
-    <!-- Inputs -->
-    <div class="card">
-      <h3 style="margin:0 0 12px;color:#1d7fb8">Inputs</h3>
-      <div class="row">
-        <div>
-          <label for="install">Installation Cost (₹)</label>
-          <input id="install" type="number" min="0" placeholder="120000">
-        </div>
-        <div>
-          <label for="subsidy">Government Subsidy (₹)</label>
-          <input id="subsidy" type="number" min="0" placeholder="20000">
-        </div>
-        <div>
-          <label for="monthly">Monthly Savings (₹)</label>
-          <input id="monthly" type="number" min="0" placeholder="3000">
-        </div>
-        <div>
-          <label for="maint">Annual Maintenance (₹)</label>
-          <input id="maint" type="number" min="0" placeholder="1500">
-        </div>
-        <div>
-          <label for="months">Projection Horizon (months)</label>
-          <input id="months" type="number" min="12" max="360" value="60">
-        </div>
-        <div>
-          <label for="location">Location (optional)</label>
-          <input id="location" type="text" placeholder="Bengaluru, India">
-        </div>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:14px">
-        <button id="calcBtn" class="btn" type="button">Calculate</button>
-        <button id="resetBtn" class="btn alt" type="button">Reset</button>
-      </div>
-    </div>
-
-    <!-- Results -->
-    <div class="card">
-      <h3 style="margin:0 0 12px;color:#1d7fb8">Results</h3>
-      <div class="stats" aria-live="polite">
-        <div class="stat"><span>Net Installation Cost</span><span id="netCost">—</span></div>
-        <div class="stat"><span>Effective Monthly Savings</span><span id="effMonthly">—</span></div>
-        <div class="stat"><span>Estimated Payback</span><span id="payback">—</span></div>
-      </div>
-      <div style="height:260px;margin-top:12px">
-        <canvas id="roiChart" role="img" aria-label="Cumulative savings vs net cost"></canvas>
-      </div>
-      <p id="caption" class="lead" style="margin-top:8px">Cumulative savings (blue) vs. dashed net-cost line.</p>
-    </div>
-  </div>
-</section>
-
-<section id="contact" class="section">
-  <h2>Contact Us</h2>
-  <p class="lead">Have a project in mind? Get a free assessment.</p>
-  <div class="card">
-    <form onsubmit="event.preventDefault(); alert('Thanks! We will contact you soon.'); this.reset();">
-      <div class="row">
-        <div><label>Name</label><input type="text" required placeholder="Your name"></div>
-        <div><label>Email</label><input type="email" required placeholder="you@example.com"></div>
-      </div>
-      <label>Phone</label><input type="tel" placeholder="+91 98765 43210">
-      <label>Message</label><input type="text" placeholder="Tell us your goals / power usage">
-      <div style="margin-top:10px"><button class="btn" type="submit">Send Message</button></div>
-    </form>
-  </div>
-</section>
-
-<footer>
-  <div class="foot">
-    <div>© <span id="year"></span> Solech. All rights reserved.</div>
-    <div style="opacity:.8">Affordable Solar • AI-Optimized</div>
-  </div>
-</footer>
-
-<script>
-  const $ = id => document.getElementById(id);
-  const INR = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n||0);
-
-  let chart;
-
-  function calculate(){
-    const install = parseFloat($('install').value)||0;
-    const subsidy = parseFloat($('subsidy').value)||0;
-    const monthly = parseFloat($('monthly').value)||0;
-    const maint   = parseFloat($('maint').value)||0; // yearly
-    const horizon = Math.min(Math.max(parseInt($('months').value)||60,12),360);
-
-    if(install<=0 || monthly<=0){ alert('Enter positive values for Installation Cost and Monthly Savings.'); return; }
-
-    const netCost    = Math.max(install - subsidy, 0);
-    const effMonthly = monthly - (maint/12);
-
-    $('netCost').textContent    = INR(netCost);
-    $('effMonthly').textContent = effMonthly>0 ? INR(effMonthly) : '—';
-
-    let paybackM = Infinity;
-    if(effMonthly>0){
-      paybackM = netCost / effMonthly;
-      $('payback').textContent = `${paybackM.toFixed(1)} months (~${(paybackM/12).toFixed(2)} years)`;
-    }else{
-      $('payback').textContent = 'Not achievable (negative/zero savings)';
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solar ROI & Energy Calculator with Chart</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f0f4f8;
     }
 
-    // Build series
-    const labels = Array.from({length:horizon}, (_,i)=>`M${i+1}`);
-    const savings = [];
-    let acc=0;
-    for(let i=0;i<horizon;i++){ acc += effMonthly; savings.push(acc); }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
 
-    // Make/replace chart
-    const ctx = $('roiChart').getContext('2d');
-    if(chart) chart.destroy();
-    chart = new Chart(ctx,{
-      type:'line',
-      data:{
-        labels,
-        datasets:[
-          { label:'Cumulative Savings (₹)', data:savings, tension:.25, fill:true,
-            backgroundColor:'rgba(45,156,219,.18)', borderColor:'rgba(45,156,219,1)', borderWidth:2, pointRadius:0 },
-          { label:'Net Cost Threshold (₹)', data:Array(horizon).fill(netCost),
-            borderDash:[6,6], borderColor:'rgba(15,23,42,.45)', borderWidth:1, pointRadius:0 }
-        ]
-      },
-      options:{
-        responsive:true, maintainAspectRatio:false,
-        interaction:{mode:'index',intersect:false},
-        scales:{
-          y:{beginAtZero:true, ticks:{callback:v=>new Intl.NumberFormat('en-IN').format(v)}},
-          x:{ticks:{autoSkip:true,maxRotation:0}}
-        },
-        plugins:{
-          legend:{display:true},
-          title:{display:true, text:`Savings Projection (${horizon} months${$('location').value? ' – '+$('location').value:''})`}
-        }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    input[type="submit"] {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background-color: #28a745;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #218838;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e9f7ef;
+      border: 1px solid #c3e6cb;
+      border-radius: 5px;
+      color: #155724;
+      font-weight: bold;
+    }
+
+    canvas {
+      margin-top: 30px;
+      max-width: 100%;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px 20px;
       }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Solar ROI & Energy Calculator</h2>
+    <form id="roiForm">
+      <label for="name">Name:</label>
+      <input type="text" id="name" required>
+
+      <label for="email">Email Address:</label>
+      <input type="email" id="email" required>
+
+      <label for="systemCost">System Cost ($):</label>
+      <input type="number" id="systemCost" required min="0" step="any">
+
+      <label for="monthlyBill">Monthly Electricity Bill ($):</label>
+      <input type="number" id="monthlyBill" required min="0" step="any">
+
+      <label for="sunlightHours">Average Sunlight Hours/Day:</label>
+      <input type="number" id="sunlightHours" required min="0" step="any">
+
+      <input type="submit" value="Calculate ROI & Energy">
+    </form>
+
+    <div class="result" id="resultBox"></div>
+
+    <!-- Chart container -->
+    <canvas id="roiChart"></canvas>
+  </div>
+
+  <script>
+    let roiChartInstance = null; // to destroy old charts if needed
+
+    document.getElementById('roiForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const systemCost = parseFloat(document.getElementById('systemCost').value);
+      const monthlyBill = parseFloat(document.getElementById('monthlyBill').value);
+      const sunlightHours = parseFloat(document.getElementById('sunlightHours').value);
+
+      if (!name || !email || isNaN(systemCost) || isNaN(monthlyBill) || isNaN(sunlightHours)) {
+        alert('Please fill out all fields correctly.');
+        return;
+      }
+
+      if (systemCost <= 0 || monthlyBill <= 0 || sunlightHours <= 0) {
+        alert('Values must be greater than zero.');
+        return;
+      }
+
+      // ROI & Energy Calculation
+      const annualSavings = monthlyBill * 12;
+      const roiYears = systemCost / annualSavings;
+
+      const costPerKW = 2500;
+      const systemSizeKW = systemCost / costPerKW;
+      const dailyKWh = systemSizeKW * sunlightHours;
+      const annualKWh = dailyKWh * 365;
+
+      // Show Result
+      const resultBox = document.getElementById('resultBox');
+      resultBox.innerHTML = `
+        Hi ${name}, based on your inputs:<br><br>
+
+        <strong>📈 ROI Estimate:</strong><br>
+        Your estimated ROI is <strong>${roiYears.toFixed(1)} years</strong>.<br><br>
+
+        <strong>🔋 Energy Production Estimate:</strong><br>
+        Estimated System Size: <strong>${systemSizeKW.toFixed(2)} kW</strong><br>
+        Average Daily Production: <strong>${dailyKWh.toFixed(1)} kWh/day</strong><br>
+        Estimated Annual Production: <strong>${annualKWh.toFixed(0)} kWh/year</strong>
+      `;
+
+      // --- Prepare Chart Data ---
+      const years = Array.from({ length: 26 }, (_, i) => i); // 0 to 25
+      const cumulativeSavings = years.map(year => year * annualSavings);
+      const systemCostLine = years.map(() => systemCost);
+
+      // --- Render Chart ---
+      const ctx = document.getElementById('roiChart').getContext('2d');
+
+      if (roiChartInstance) {
+        roiChartInstance.destroy(); // remove old chart if exists
+      }
+
+      roiChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: years,
+          datasets: [
+            {
+              label: 'Cumulative Savings ($)',
+              data: cumulativeSavings,
+              borderColor: '#28a745',
+              backgroundColor: 'rgba(40, 167, 69, 0.2)',
+              tension: 0.3,
+              fill: true
+            },
+            {
+              label: 'System Cost ($)',
+              data: systemCostLine,
+              borderColor: '#dc3545',
+              borderDash: [5, 5],
+              tension: 0,
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Solar ROI Over Time',
+              font: { size: 18 }
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false
+            }
+          },
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Years'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Dollars ($)'
+              },
+              beginAtZero: true
+            }
+          }
+        }
+      });
     });
-
-    $('caption').textContent = 'Break-even occurs where the blue savings curve crosses the dashed net-cost line.';
-  }
-
-  $('calcBtn').addEventListener('click', calculate);
-  $('resetBtn').addEventListener('click', ()=>{
-    document.querySelectorAll('input').forEach(i=>{ if(i.type!=='button') i.value=''; });
-    $('months').value=60; $('netCost').textContent='—'; $('effMonthly').textContent='—'; $('payback').textContent='—';
-    if(chart) chart.destroy();
-    $('caption').textContent = 'Cumulative savings (blue) vs. dashed net-cost line.';
-  });
-
-  $('year').textContent = new Date().getFullYear();
-</script>
+  </script>
 </body>
 </html>
+
