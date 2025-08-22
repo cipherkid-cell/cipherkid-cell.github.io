@@ -1,192 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Solar ROI & Energy Calculator with Chart</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar ROI Calculator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 20px;
-      background: #f0f4f8;
+      padding: 0;
+      background: #f4f9f9;
+      color: #333;
     }
-
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background: #fff;
-      padding: 20px 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    h2 {
+    header {
       text-align: center;
-      margin-bottom: 20px;
+      background: #004d40;
+      color: white;
+      padding: 1rem;
     }
-
+    header img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-bottom: 5px solid #00796b;
+    }
+    main {
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
     label {
       display: block;
       margin-top: 15px;
       font-weight: bold;
     }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="number"] {
+    input {
       width: 100%;
-      padding: 10px;
+      padding: 8px;
       margin-top: 5px;
-      border-radius: 4px;
       border: 1px solid #ccc;
+      border-radius: 6px;
     }
-
-    input[type="submit"] {
-      margin-top: 20px;
-      width: 100%;
-      padding: 12px;
-      background-color: #28a745;
-      color: white;
-      font-size: 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    input[type="submit"]:hover {
-      background-color: #218838;
-    }
-
     .result {
       margin-top: 20px;
       padding: 15px;
-      background-color: #e9f7ef;
-      border: 1px solid #c3e6cb;
-      border-radius: 5px;
-      color: #155724;
-      font-weight: bold;
+      background: #e0f7fa;
+      border-left: 5px solid #00796b;
+      border-radius: 6px;
     }
-
     canvas {
-      margin-top: 30px;
-      max-width: 100%;
-    }
-
-    @media (max-width: 600px) {
-      .container {
-        padding: 15px 20px;
-      }
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
+  <header>
+    <img src="https://images.unsplash.com/photo-1509395176047-4a66953fd231" alt="Solar Panels Banner">
+    <h1>Solar ROI Calculator</h1>
+  </header>
 
-  <div class="container">
-    <h2>Solar ROI & Energy Calculator</h2>
+  <main>
     <form id="roiForm">
-      <label for="name">Name:</label>
-      <input type="text" id="name" required>
-
-      <label for="email">Email Address:</label>
-      <input type="email" id="email" required>
-
-      <label for="systemCost">System Cost ($):</label>
-      <input type="number" id="systemCost" required min="0" step="any">
-
-      <label for="monthlyBill">Monthly Electricity Bill ($):</label>
-      <input type="number" id="monthlyBill" required min="0" step="any">
-
-      <label for="sunlightHours">Average Sunlight Hours/Day:</label>
-      <input type="number" id="sunlightHours" required min="0" step="any">
-
-      <input type="submit" value="Calculate ROI & Energy">
+      <label>Name: <input type="text" id="name" required></label>
+      <label>Email Address: <input type="email" id="email" required></label>
+      <label>System Cost ($): <input type="number" id="systemCost" required></label>
+      <label>Monthly Electricity Bill ($): <input type="number" id="monthlyBill" required></label>
+      <label>Average Sunlight Hours/Day: <input type="number" id="sunHours" step="0.1" required></label>
     </form>
 
-    <div class="result" id="resultBox"></div>
+    <div class="result" id="result">
+      Fill the form to calculate ROI.
+    </div>
 
-    <!-- Chart container -->
     <canvas id="roiChart"></canvas>
-  </div>
+  </main>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
-    let roiChartInstance = null; // to destroy old charts if needed
+    const form = document.getElementById('roiForm');
+    const resultDiv = document.getElementById('result');
+    const ctx = document.getElementById('roiChart').getContext('2d');
+    let chart;
 
-    document.getElementById('roiForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+    function calculateROI() {
+      const systemCost = parseFloat(document.getElementById('systemCost').value) || 0;
+      const monthlyBill = parseFloat(document.getElementById('monthlyBill').value) || 0;
+      const sunHours = parseFloat(document.getElementById('sunHours').value) || 0;
 
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const systemCost = parseFloat(document.getElementById('systemCost').value);
-      const monthlyBill = parseFloat(document.getElementById('monthlyBill').value);
-      const sunlightHours = parseFloat(document.getElementById('sunlightHours').value);
-
-      if (!name || !email || isNaN(systemCost) || isNaN(monthlyBill) || isNaN(sunlightHours)) {
-        alert('Please fill out all fields correctly.');
+      if (!systemCost || !monthlyBill || !sunHours) {
+        resultDiv.innerHTML = "Please fill all fields with valid numbers.";
         return;
       }
 
-      if (systemCost <= 0 || monthlyBill <= 0 || sunlightHours <= 0) {
-        alert('Values must be greater than zero.');
-        return;
-      }
-
-      // ROI & Energy Calculation
-      const annualSavings = monthlyBill * 12;
+      // Offset factor (0.30 to 0.90 depending on sunlight hours)
+      const offset = Math.min(0.90, Math.max(0.30, sunHours * 0.1));
+      const monthlySavings = monthlyBill * offset;
+      const annualSavings = monthlySavings * 12;
       const roiYears = systemCost / annualSavings;
 
-      const costPerKW = 2500;
-      const systemSizeKW = systemCost / costPerKW;
-      const dailyKWh = systemSizeKW * sunlightHours;
-      const annualKWh = dailyKWh * 365;
-
-      // Show Result
-      const resultBox = document.getElementById('resultBox');
-      resultBox.innerHTML = `
-        Hi ${name}, based on your inputs:<br><br>
-
-        <strong>📈 ROI Estimate:</strong><br>
-        Your estimated ROI is <strong>${roiYears.toFixed(1)} years</strong>.<br><br>
-
-        <strong>🔋 Energy Production Estimate:</strong><br>
-        Estimated System Size: <strong>${systemSizeKW.toFixed(2)} kW</strong><br>
-        Average Daily Production: <strong>${dailyKWh.toFixed(1)} kWh/day</strong><br>
-        Estimated Annual Production: <strong>${annualKWh.toFixed(0)} kWh/year</strong>
+      resultDiv.innerHTML = `
+        <strong>Results:</strong><br>
+        Estimated Monthly Savings: $${monthlySavings.toFixed(2)}<br>
+        Annual Savings: $${annualSavings.toFixed(2)}<br>
+        ROI: ${roiYears.toFixed(1)} years<br>
+        Bill Offset: ${(offset * 100).toFixed(0)}%
       `;
 
-      // --- Prepare Chart Data ---
-      const years = Array.from({ length: 26 }, (_, i) => i); // 0 to 25
-      const cumulativeSavings = years.map(year => year * annualSavings);
-      const systemCostLine = years.map(() => systemCost);
+      // Create line chart of cumulative savings vs cost
+      const years = Array.from({length: Math.ceil(roiYears) + 2}, (_, i) => i);
+      const savingsData = years.map(y => y * annualSavings);
+      const costData = years.map(() => systemCost);
 
-      // --- Render Chart ---
-      const ctx = document.getElementById('roiChart').getContext('2d');
-
-      if (roiChartInstance) {
-        roiChartInstance.destroy(); // remove old chart if exists
-      }
-
-      roiChartInstance = new Chart(ctx, {
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
         type: 'line',
         data: {
           labels: years,
           datasets: [
             {
               label: 'Cumulative Savings ($)',
-              data: cumulativeSavings,
-              borderColor: '#28a745',
-              backgroundColor: 'rgba(40, 167, 69, 0.2)',
-              tension: 0.3,
-              fill: true
+              data: savingsData,
+              borderColor: '#00796b',
+              borderWidth: 2,
+              fill: false,
             },
             {
               label: 'System Cost ($)',
-              data: systemCostLine,
-              borderColor: '#dc3545',
-              borderDash: [5, 5],
-              tension: 0,
-              fill: false
+              data: costData,
+              borderColor: '#d32f2f',
+              borderWidth: 2,
+              borderDash: [5,5],
+              fill: false,
             }
           ]
         },
@@ -195,36 +144,18 @@
           plugins: {
             title: {
               display: true,
-              text: 'Solar ROI Over Time',
-              font: { size: 18 }
-            },
-            tooltip: {
-              mode: 'index',
-              intersect: false
+              text: 'Solar ROI Projection (Years vs $)'
             }
-          },
-          interaction: {
-            mode: 'index',
-            intersect: false
           },
           scales: {
-            x: {
-              title: {
-                display: true,
-                text: 'Years'
-              }
-            },
-            y: {
-              title: {
-                display: true,
-                text: 'Dollars ($)'
-              },
-              beginAtZero: true
-            }
+            x: { title: { display: true, text: 'Years' } },
+            y: { title: { display: true, text: 'Cumulative Value ($)' } }
           }
         }
       });
-    });
+    }
+
+    form.addEventListener('input', calculateROI);
   </script>
 </body>
 </html>
