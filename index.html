@@ -68,9 +68,9 @@
     <form id="roiForm">
       <label>Name: <input type="text" id="name" required></label>
       <label>Email Address: <input type="email" id="email" required></label>
-      <label>System Cost ($): <input type="number" id="systemCost" required></label>
-      <label>Monthly Electricity Bill ($): <input type="number" id="monthlyBill" required></label>
-      <label>Average Sunlight Hours/Day: <input type="number" id="sunHours" step="0.1" required></label>
+      <label>System Cost ($): <input type="number" id="systemCost" required min="0"></label>
+      <label>Monthly Electricity Bill ($): <input type="number" id="monthlyBill" required min="0"></label>
+      <label>Average Sunlight Hours/Day: <input type="number" id="sunHours" step="0.1" required min="0"></label>
     </form>
 
     <div class="result" id="result">
